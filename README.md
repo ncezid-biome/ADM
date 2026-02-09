@@ -1,6 +1,102 @@
-# template
 
-The purpose of this repository is to serve as a nice template to align with the values in DFWED.
+# Modular Nextflow Pipeline for SRR → Assembly → Amplicons → Pairwise Matrix
+
+This repository provides a **modular, Singularity-based Nextflow (DSL2)** pipeline for:
+
+1. Downloading raw reads from NCBI SRA (SRR accessions)
+2. Assembling reads with **Shovill**
+3. Predicting in‑silico amplicons using **EMBOSS primersearch**
+4. Generating a **pairwise difference matrix** from amplicon FASTA files
+
+---
+
+## Pipeline stages and data flow
+
+```
+SRR list
+   │
+   ▼
+fastqs/          (download)
+   │
+   ▼
+assemblies/      (shovill)
+   │
+   ▼
+amplicons/       (primersearch)
+   │
+   ▼
+pairwise matrix  (CSV)
+```
+
+---
+
+## Directory structure
+
+When all stages are run, outputs are written under a single `--outdir`.  
+
+```
+results/
+├── fastqs/
+│   ├── SRR123_1.fastq.gz
+│   ├── SRR123_2.fastq.gz
+│   └── ...
+├── assemblies/
+│   │   └── SRR123_assembled.fasta
+│   └── ...
+├── primersearch/
+│   ├── amplicon/
+│   │   ├── SRR123_assembled_extractedAmplicons.fasta
+│   │   ├── SRR123_assembled_not_matched_primers.txt
+│   ├── SRR123_assembled.fasta
+│   ├── SRR123.json
+│   ├── SRR123.ps
+│   └── ...
+├── matrix_rows/
+│   │   └── SRR123_assembled_extractedAmplicons.txt
+│   └── ...
+└── matrix/
+    └── pairwise_diff_matrix.csv
+```
+
+---
+
+
+
+## Common usage patterns
+
+### Full pipeline: SRR → matrix
+
+```bash
+nextflow run main.nf \
+   --srr_list <SRR list file (one SRR per row)> \
+   --outdir $PWD/<output folder> \ 
+   --primers <primer file (3-column primersearch format)> \ 
+    --output_csv pairwise_test_50srrs.csv 
+```
+
+
+---
+
+## Repository layout
+
+```
+.
+├── main.nf
+├── nextflow.config
+├── modules/
+│   ├── download_reads.nf
+│   ├── assemble_shovill.nf
+│   ├── primersearch_amplicons.nf
+│   └── pairwise_matrix.nf
+├── bin/
+│   ├── parse_primersearch.py
+│   ├── fasta_to_json.py
+│   ├── pairwise_compare.py
+│   └── merge_rows.py
+└── README.md
+```
+
+---
 
 ## Notices
 
