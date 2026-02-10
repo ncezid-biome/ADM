@@ -19,7 +19,7 @@ import java.nio.file.Paths
 workflow primersearch_workflow {
 
     take:
-        assemblies_ch
+        assemblies_ch optional: true
 
     main:
         // fallback to folder if channel not provided

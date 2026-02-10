@@ -64,15 +64,70 @@ results/
 
 ## Common usage patterns
 
-### Full pipeline: SRR → matrix
+### 1. Full pipeline: SRR → matrix
 
 ```bash
 nextflow run main.nf \
    --srr_list <SRR list file (one SRR per row)> \
-   --outdir $PWD/<output folder> \ 
+   --outdir $PWD/<output folder> (need to use absolute path, or prefix it with $PWD\
    --primers <primer file (3-column primersearch format)> \ 
     --output_csv pairwise_test_50srrs.csv 
 ```
+
+### 2. Download-only (raw FASTQ files from SRA)  
+
+```bash
+nextflow run main.nf -entry download_only \
+    --srr_list srr_ids.txt \
+    --outdir results
+```
+
+### 3. Assembly-only (skip SRA download)   
+
+```bash
+nextflow run main.nf -entry assembly_only \
+    --reads /path/to/fastqs \
+    --outdir results
+```
+
+### 4. Download + assembly (da)
+
+```bash
+nextflow run main.nf -entry da \
+    --srr_list srr_ids.txt \
+    --outdir results
+```
+
+### 5. Primersearch-only  
+
+```bash
+nextflow run main.nf -entry primersearch_only \
+    --reads /path/to/assemblies \
+    --primers primers.txt \
+    --outdir results \
+```
+
+### 6. Pairwise-only
+
+```bash
+nextflow run main.nf -entry pairwise_only \
+    --amplicon_folder $PWD/amplicons (need to use absolute path, or prefix it with $PWD \
+    --primers primers.txt \
+    --output_csv pairwise.csv \
+    --outdir output_folder
+```
+
+### 7. Primersearch + pairwise matrix (pp)
+
+```bash
+nextflow run main.nf -entry pp \
+    --reads assemblies \
+    --primers primers.txt \
+    --outdir $PWD/results  (need to use absolute path, or prefix it with $PWD\
+    --output_csv pairwise.csv
+```
+
+
 
 
 ---
