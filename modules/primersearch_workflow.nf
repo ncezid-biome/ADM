@@ -19,11 +19,11 @@ import java.nio.file.Paths
 workflow primersearch_workflow {
 
     take:
-        assemblies_ch optional: true
+        assemblies_ch// optional: true
 
     main:
         // fallback to folder if channel not provided
-        fasta_ch = assemblies_ch ?: Channel.fromPath("${params.reads}/*_{assembled,contigs}.fasta")
+        fasta_ch = assemblies_ch ?: Channel.fromPath(["${params.reads}/*_{assembled,contigs}.fasta", "${params.reads}/**/*_{assembled,contigs}.fasta"])
             .map { file ->
                 def sample = file.baseName.replaceAll(/_assembled|_contigs/, '')
                 tuple(sample, file)
