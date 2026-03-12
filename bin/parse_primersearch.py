@@ -48,7 +48,11 @@ def parsePrimerSearch(primersearch_results, full_length_dict, file_base, max_amp
         for line in inputFile:
             if "Amplimer " in line:
                 ampl_count += 1
-                seq_id = inputFile.readline().strip().replace("Sequence: ", "")
+                
+                # to fix this issue: Sequence: <accession.version> <accession_without_version>
+                # seq_id = inputFile.readline().strip().replace("Sequence: ", "")
+                seq_id = inputFile.readline().strip().replace("Sequence: ", "").split()[0]
+                
                 description = inputFile.readline().strip()
                 forward_hit_line = inputFile.readline().strip()
                 forward_primer_length = extractPrimerLength(forward_hit_line)
@@ -100,7 +104,42 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     file_base = Path(args.sequence).stem
-    full_length_dict = SeqIO.to_dict(SeqIO.parse(args.sequence, "fasta"))
+    
+    # this might break for gi sequence id
+    # full_length_dict = SeqIO.to_dict(SeqIO.parse(args.sequence, "fasta"))
+    
+    '''
+    >gi|...|gb|ALPN01000020.1|
+    >NC_003197.2
+    >ALPN01000020.1
+    >Sal_JN6_08-0810c1
+    >NODE_16_length_102382_cov_20.6243_ID_31
+    '''
+    full_length_dict = {}
+    for rec in SeqIO.parse(args.sequence, "fasta"):
+
+        acc = None
+
+        if '|' in rec.id:
+            parts = rec.id.split('|')
+            if len(parts) >= 4:
+                acc = parts[3]
+
+        if acc is None:
+            m = re.search(r'[A-Z]{1,5}_?[A-Z0-9]*\d+\.\d+', rec.id)
+            if m:
+                acc = m.group(0)
+
+        if acc is None:
+            acc = rec.id
+
+        #store both keys:  full_length_dict["gi|402265583|gb|ALPN01000020.1|"]
+        #                  full_length_dict["ALPN01000020.1"]
+        full_length_dict[rec.id] = rec
+        full_length_dict[acc] = rec
+        
+    
+    
     amplicons, not_match_primer_list = parsePrimerSearch(args.results, full_length_dict, file_base, args.amp_len)
 
     with open(f'{file_base}{amplicon_file_extension}', 'w') as f:
