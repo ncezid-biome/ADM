@@ -62,7 +62,7 @@ process RUN_PRIMERSEARCH {
     """
     set -euo pipefail
 
-    ${params.EMBOSS_PRIMERSEARCH_6_4_0} \
+    primersearch \
         -infile ${params.primers} \
                     -seqall ${fasta_file} \
                     -outfile ${sample_id}.ps \

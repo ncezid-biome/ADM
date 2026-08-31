@@ -36,7 +36,6 @@ workflow {
      */
     primersearch_input_ch = assemblies_ch ?: Channel.fromPath("${params.reads}/**/*.{fasta,fa}")
                                                 .map { file -> tuple(file.getBaseName(), file) }
-
     amplicon_fastas = primersearch_workflow(primersearch_input_ch)
 
     /*
