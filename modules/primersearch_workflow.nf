@@ -23,7 +23,7 @@ workflow primersearch_workflow {
 
     main:
         // fallback to folder if channel not provided
-        fasta_ch = assemblies_ch ?: Channel.fromPath(["${params.reads}/*_{assembled,contigs}.fasta", "${params.reads}/**/*_{assembled,contigs}.fasta"])
+        fasta_ch = assemblies_ch ?: Channel.fromPath(["${params.reads}/*.fasta", "${params.reads}/**/*.fasta"])
             .map { file ->
                 def sample = file.baseName.replaceAll(/_assembled|_contigs/, '')
                 tuple(sample, file)

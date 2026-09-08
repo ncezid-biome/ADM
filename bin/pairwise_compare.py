@@ -50,6 +50,7 @@ def check_diff_by_primer(seq1, seq2):
         h2 = get_hash(seq2)
         h2_rc = get_hash(revcomp_cached(seq2))
         return not (h1 == h2 or h1 == h2_rc)
+        # return not (h1 == h2) # skip the reverse complement comparision
     else:
         return not (seq1 == seq2 or seq1 == revcomp_cached(seq2))
     
